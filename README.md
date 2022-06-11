@@ -54,8 +54,10 @@ Parametry wywołania programu:
 
 `-f` relatywna ścieżka do pliku z danymi
 
+`-d` wstępne kodowanie różnicowe wartością średnią obrazu z mapowaniem wartości
+
   
 
 ```
-python main.py -k 2 -f "resources\data\geometr_09.pgm"
+python main.py -k 2 -f "resources\\data\\geometr_09.pgm"
 ```

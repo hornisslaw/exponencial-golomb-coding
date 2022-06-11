@@ -56,8 +56,38 @@ def average_code_bit_length(coded_image: list[list[bitarray]]) -> float:
     return total_bit_length / num_code_words
 
 
-# def entropy_shortcut(image: np.ndarray) -> float:
-#     import skimage.measure
+def differencial_encode(image: np.ndarray, offset) -> np.ndarray:
+    new_image = np.copy(image)
+    predictions = np.ones(new_image.shape) * offset
 
-#     entropy = skimage.measure.shannon_entropy(image)
-#     return entropy
+    return (new_image - predictions).astype(np.int16)
+
+
+def differencial_decode(image: np.ndarray, offset) -> np.ndarray:
+    new_image = np.copy(image)
+    predictions = np.ones(new_image.shape) * offset
+
+    return (new_image + predictions).astype(np.uint8)
+
+
+def map_to_positive_integers(image: np.ndarray) -> np.ndarray:
+    new_image = np.zeros(image.shape, dtype=np.uint8)
+    for i, row in enumerate(image):
+        for j, pixel in enumerate(row):
+            if pixel >= 0:
+                new_image[i][j] = 2 * pixel
+            else:
+                new_image[i][j] = 2 * (-pixel) - 1
+    return new_image
+
+
+def reverse_map_to_positive_integers(image: np.ndarray) -> np.ndarray:
+    new_image = np.zeros(image.shape, dtype=np.int16)
+    for i, row in enumerate(image):
+        for j, pixel in enumerate(row):
+            if pixel % 2 != 0:
+                new_image[i][j] = -(pixel + 1) / 2
+            else:
+                new_image[i][j] = pixel / 2
+
+    return new_image

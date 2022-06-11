@@ -12,6 +12,10 @@ from utils import (
     average_code_bit_length,
     display_histogram,
     display_image,
+    differencial_encode,
+    differencial_decode,
+    map_to_positive_integers,
+    reverse_map_to_positive_integers,
 )
 
 
@@ -27,10 +31,17 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
     parser.add_argument("-f", "--file_path")
     parser.add_argument("-k", "--k_parameter")
+    parser.add_argument("-d", "--diff_encoding_first", action="store_true")
     args = parser.parse_args(argv)
 
     pgm_file = load_pgm_file(file_path=args.file_path)
     # display_image(pgm_file)
+
+    if args.diff_encoding_first:
+        offset = int(np.average(pgm_file))
+        print(f"Offset: {offset}")
+        diff = differencial_encode(pgm_file, offset)
+        pgm_file = map_to_positive_integers(diff)
 
     k = int(args.k_parameter)
     exp_golomb = ExpGolombCoder(k)
@@ -40,12 +51,12 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     print(f"{calculate_entropy(pgm_file)=}")
     print(f"{average_code_bit_length(enc)=}")
     print(f"{calculate_compression_rate(pgm_file, enc, bits=8)=}")
-    print(f"input: {pgm_file}")
+    # print(f"input: {pgm_file}")
     # print(f"encoded: {enc}") <- better not to print this :)
-    print(f"decoded: {dcd}")
+    # print(f"decoded: {dcd}")
 
     histogram = calculate_histogram(pgm_file, num_values=256)
-    file_name = args.file_path[15:]
+    file_name = args.file_path.split("\\")[-1]
     histogram_title = f"Histogram dla danych z pliku {file_name}"
     display_histogram(histogram, num_values=256, title=histogram_title)
 
