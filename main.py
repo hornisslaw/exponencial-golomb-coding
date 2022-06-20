@@ -14,34 +14,34 @@ from utils import (
     display_image,
     differencial_encode,
     differencial_decode,
+    differential_code_left,
     map_to_positive_integers,
     reverse_map_to_positive_integers,
+    load_pgm_file
 )
-
-
-def load_pgm_file(file_path: str) -> np.ndarray:
-    with open(file_path, "rb") as pgmf:
-        file = plt.imread(pgmf)
-
-    return file
-
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-f", "--file_path")
     parser.add_argument("-k", "--k_parameter")
-    parser.add_argument("-d", "--diff_encoding_first", action="store_true")
+    parser.add_argument("-d", "--diff_encoding_mode")
     args = parser.parse_args(argv)
 
     pgm_file = load_pgm_file(file_path=args.file_path)
     # display_image(pgm_file)
+    diff_mode = args.diff_encoding_mode
 
-    if args.diff_encoding_first:
+    if diff_mode == "mean":
         offset = int(np.average(pgm_file))
         print(f"Offset: {offset}")
         diff = differencial_encode(pgm_file, offset)
         pgm_file = map_to_positive_integers(diff)
+    elif diff_mode == "left":
+        diff = differential_code_left(pgm_file, offset=128)
+        pgm_file = map_to_positive_integers(diff)
+    else:
+        print("Skipping differential coding")
 
     k = int(args.k_parameter)
     exp_golomb = ExpGolombCoder(k)
@@ -58,7 +58,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     histogram = calculate_histogram(pgm_file, num_values=256)
     file_name = args.file_path.split("\\")[-1]
     histogram_title = f"Histogram dla danych z pliku {file_name}"
-    display_histogram(histogram, num_values=256, title=histogram_title)
+    # display_histogram(histogram, num_values=256, title=histogram_title)
 
     return 0
 

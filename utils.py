@@ -91,3 +91,22 @@ def reverse_map_to_positive_integers(image: np.ndarray) -> np.ndarray:
                 new_image[i][j] = pixel / 2
 
     return new_image
+
+
+def load_pgm_file(file_path: str) -> np.ndarray:
+    with open(file_path, "rb") as pgmf:
+        file = plt.imread(pgmf)
+
+    return file
+
+
+def differential_code_left(image: np.ndarray, offset: int) -> np.ndarray:
+    """
+        Formula for differential coding using left neighbour
+        output[i][j] = image[i][j] - offset,            for j=0, offset=128
+        output[i][j] = image[i][j] - image[i][j-1],     for j>0
+    """
+    image = np.copy(image)
+    column = np.repeat(offset, image.shape[0])
+    prediction = np.column_stack((column, image[:, :-1]))
+    return (image - prediction).astype(np.int16)

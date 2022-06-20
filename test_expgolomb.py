@@ -2,6 +2,7 @@ import pytest
 import numpy as np
 
 from expgolomb import ExpGolombCoder
+from utils import load_pgm_file
 
 
 @pytest.mark.parametrize(
@@ -13,6 +14,25 @@ from expgolomb import ExpGolombCoder
     ),
 )
 def test_codec_flow(input_image):
+    exp_golomb = ExpGolombCoder(k=2)
+    enc = exp_golomb.encode_image(input_image)
+    dcd = exp_golomb.decode_encoded_image(enc)
+    assert np.array_equal(input_image, dcd)
+
+
+@pytest.mark.parametrize(
+    ('image_path'),
+    (
+        pytest.param("resources\\images\\barbara.pgm", id='barbara'),
+        pytest.param("resources\\images\\boat.pgm", id='boat'),
+        pytest.param("resources\\images\\chronometer.pgm", id='chronometer'),
+        pytest.param("resources\\images\\lena.pgm", id='lena'),
+        pytest.param("resources\\images\\mandril.pgm", id='mandril'),
+        pytest.param("resources\\images\\peppers.pgm", id='peppers'),
+    ),
+)
+def test_image(image_path):
+    input_image = load_pgm_file(image_path)
     exp_golomb = ExpGolombCoder(k=2)
     enc = exp_golomb.encode_image(input_image)
     dcd = exp_golomb.decode_encoded_image(enc)
